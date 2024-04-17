@@ -1,0 +1,7 @@
+name: MacsLibs
+version: 2.0
+author: MacsWorks
+main: eu.macsworks.premium.macslibs.MacsLibs
+description: Library plugin for MacsWorks projects
+api-version: 1.14
+website: macsworks.eu

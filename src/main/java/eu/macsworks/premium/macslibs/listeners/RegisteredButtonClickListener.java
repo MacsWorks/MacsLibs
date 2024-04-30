@@ -23,13 +23,19 @@ public class RegisteredButtonClickListener implements Listener {
 
     public void tick(){
         Bukkit.getOnlinePlayers().forEach(player -> {
-           for(ItemStack item : player.getInventory()){
-               if(item == null || item.getType() == Material.AIR) continue;
+            ItemStack item = player.getInventory().getItemInMainHand();
+            if(item.getType() != Material.AIR){
+                if(new NBTItem(item).hasTag("macsitem_hold")){
+                    onHold.get(new NBTItem(item).getString("macsitem_hold")).accept(player);
+                }
+            }
 
-               if(!new NBTItem(item).hasTag("macsitem_hold")) continue;
-
-               onHold.get(new NBTItem(item).getString("macsitem_hold")).accept(player);
-           }
+            ItemStack item1 = player.getInventory().getItemInOffHand();
+            if(item1.getType() != Material.AIR){
+                if(new NBTItem(item1).hasTag("macsitem_hold")){
+                    onHold.get(new NBTItem(item1).getString("macsitem_hold")).accept(player);
+                }
+            }
         });
     }
 

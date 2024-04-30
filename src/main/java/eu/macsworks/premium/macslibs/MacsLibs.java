@@ -25,13 +25,18 @@ public final class MacsLibs extends JavaPlugin {
 
     @Getter private LibLoader libLoader;
 
+    private RegisteredButtonClickListener registeredButtonClickListener;
+
     @Override
     public void onEnable() {
         setInstance(this);
 
         libLoader = new LibLoader();
 
+        registeredButtonClickListener = new RegisteredButtonClickListener();
+
         loadListeners();
+        loadTasks();
 
         Bukkit.getLogger().info("+-----------------------+");
         Bukkit.getLogger().info("");
@@ -41,7 +46,11 @@ public final class MacsLibs extends JavaPlugin {
     }
 
     private void loadListeners(){
-        Bukkit.getPluginManager().registerEvents(new RegisteredButtonClickListener(), this);
+        Bukkit.getPluginManager().registerEvents(registeredButtonClickListener, this);
+    }
+
+    private void loadTasks(){
+        Bukkit.getScheduler().runTaskTimer(this, registeredButtonClickListener::tick, 0L, 20L);
     }
 
     public static boolean checkLicense(String license){

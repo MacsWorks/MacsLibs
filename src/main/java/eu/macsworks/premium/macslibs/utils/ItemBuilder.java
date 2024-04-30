@@ -3,10 +3,12 @@ package eu.macsworks.premium.macslibs.utils;
 import de.tr7zw.changeme.nbtapi.NBTItem;
 import eu.macsworks.premium.macslibs.listeners.RegisteredButtonClickListener;
 import eu.macsworks.premium.macslibs.objects.InteractResult;
+import eu.macsworks.premium.macslibs.objects.PhisicalInteractResult;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.enchantments.Enchantment;
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -83,6 +85,26 @@ public class ItemBuilder {
         nbt.setString("macsitem", id);
         item = nbt.getItem();
         RegisteredButtonClickListener.addAction(id, onInteract);
+        return this;
+    }
+
+    public ItemBuilder interactable(Consumer<PhisicalInteractResult> onInteract){
+        checkItem();
+        String id = UUID.randomUUID().toString();
+        NBTItem nbt = new NBTItem(item);
+        nbt.setString("macsitem_interact", id);
+        item = nbt.getItem();
+        RegisteredButtonClickListener.addInteractAction(id, onInteract);
+        return this;
+    }
+
+    public ItemBuilder onHold(Consumer<Player> onHold){
+        checkItem();
+        String id = UUID.randomUUID().toString();
+        NBTItem nbt = new NBTItem(item);
+        nbt.setString("macsitem_hold", id);
+        item = nbt.getItem();
+        RegisteredButtonClickListener.addHoldAction(id, onHold);
         return this;
     }
 

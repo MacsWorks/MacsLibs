@@ -6,3 +6,6 @@ lang:
   no-permission: "&c[&4!&c] You don't have permission!"
   usage-header: "&7Usage for &b/%command%&7:"
   usage-subcommand: "&b/%command% %subcommand%%args%: &f%use%"
+
+#Set this to false if you don't wish to receive promotional messages from MacsWorks
+advertising: true

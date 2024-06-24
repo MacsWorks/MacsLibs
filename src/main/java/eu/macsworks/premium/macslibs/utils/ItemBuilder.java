@@ -4,6 +4,7 @@ import de.tr7zw.changeme.nbtapi.NBTItem;
 import eu.macsworks.premium.macslibs.listeners.RegisteredButtonClickListener;
 import eu.macsworks.premium.macslibs.objects.InteractResult;
 import eu.macsworks.premium.macslibs.objects.PhisicalInteractResult;
+import eu.macsworks.premium.macslibs.utils.versionpopulators.FoodPopulator;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
@@ -13,6 +14,7 @@ import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
+import org.bukkit.inventory.meta.components.ToolComponent;
 
 import java.util.Arrays;
 import java.util.UUID;
@@ -108,6 +110,33 @@ public class ItemBuilder {
         return this;
     }
 
+    public ItemBuilder interactive(Consumer<InteractResult> onInteract, String id){
+        checkItem();
+        NBTItem nbt = new NBTItem(item);
+        nbt.setString("macsitem", id);
+        item = nbt.getItem();
+        RegisteredButtonClickListener.addAction(id, onInteract);
+        return this;
+    }
+
+    public ItemBuilder interactable(Consumer<PhisicalInteractResult> onInteract, String id){
+        checkItem();
+        NBTItem nbt = new NBTItem(item);
+        nbt.setString("macsitem_interact", id);
+        item = nbt.getItem();
+        RegisteredButtonClickListener.addInteractAction(id, onInteract);
+        return this;
+    }
+
+    public ItemBuilder onHold(Consumer<Player> onHold, String id){
+        checkItem();
+        NBTItem nbt = new NBTItem(item);
+        nbt.setString("macsitem_hold", id);
+        item = nbt.getItem();
+        RegisteredButtonClickListener.addHoldAction(id, onHold);
+        return this;
+    }
+
     public ItemBuilder makeStatic(){
         checkItem();
         NBTItem nbt = new NBTItem(item);
@@ -139,6 +168,30 @@ public class ItemBuilder {
         item = new ItemStack(Material.PLAYER_HEAD);
         SkullMeta meta = (SkullMeta) getMeta();
         meta.setOwningPlayer(player);
+        item.setItemMeta(meta);
+        return this;
+    }
+
+    public ItemBuilder food(int nutrition, float saturation, float eatSeconds){
+        checkItem();
+        ItemMeta meta = item.getItemMeta();
+        new FoodPopulator().populate(meta, new Object[]{nutrition, saturation, eatSeconds});
+        item.setItemMeta(meta);
+        return this;
+    }
+
+    public ItemBuilder unbreakable(boolean b){
+        checkItem();
+        ItemMeta meta = item.getItemMeta();
+        meta.setUnbreakable(b);
+        item.setItemMeta(meta);
+        return this;
+    }
+
+    public ItemBuilder fireResistant(boolean b){
+        checkItem();
+        ItemMeta meta = item.getItemMeta();
+        meta.setFireResistant(b);
         item.setItemMeta(meta);
         return this;
     }

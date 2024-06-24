@@ -10,9 +10,11 @@ import org.bukkit.command.*;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.function.BiConsumer;
+import java.util.stream.Collectors;
 
 public class MacsCommand implements CommandExecutor, TabExecutor {
 
@@ -134,6 +136,14 @@ public class MacsCommand implements CommandExecutor, TabExecutor {
                     .replace("%subcommand%", "")
                     .replace("%args%", requiredArgs)
                     .replace("%use%", usage)));
+
+            if(!subcommands.isEmpty()){
+                subcommands.values().forEach(subcommand -> p.sendMessage(ColorTranslator.translate(MacsLibs.getInstance().getLibLoader().getLang("usage-subcommand")
+                        .replace("%command%", commandId)
+                        .replace("%subcommand%", subcommand.getId())
+                        .replace("%args%", subcommand.getRequiredArgs())
+                        .replace("%use%", subcommand.getUsage()))));
+            }
             return;
         }
 
@@ -147,6 +157,10 @@ public class MacsCommand implements CommandExecutor, TabExecutor {
 
     @Override
     public List<String> onTabComplete(CommandSender commandSender, Command command, String s, String[] strings) {
+        if(strings.length <= 1 && !subcommands.isEmpty()){
+            if(strings.length == 0) return new ArrayList<>(subcommands.keySet());
+            return subcommands.keySet().stream().filter(sub -> sub.startsWith(strings[0])).collect(Collectors.toList());
+        }
         return null;
     }
 }

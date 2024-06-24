@@ -1,21 +1,11 @@
 package eu.macsworks.premium.macslibs;
 
-import eu.macsworks.premium.macslibs.licensing.HWID;
+import eu.macsworks.premium.macslibs.advertising.AdvertManager;
 import eu.macsworks.premium.macslibs.listeners.RegisteredButtonClickListener;
 import eu.macsworks.premium.macslibs.utils.LibLoader;
 import lombok.Getter;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
-
-import javax.net.ssl.HttpsURLConnection;
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.IOException;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.net.URLEncoder;
-import java.net.UnknownHostException;
-import java.util.concurrent.CompletableFuture;
 
 public final class MacsLibs extends JavaPlugin {
 
@@ -24,6 +14,7 @@ public final class MacsLibs extends JavaPlugin {
     private static void setInstance(MacsLibs libs) { instance = libs; }
 
     @Getter private LibLoader libLoader;
+    @Getter private AdvertManager advertManager;
 
     private RegisteredButtonClickListener registeredButtonClickListener;
 
@@ -31,6 +22,7 @@ public final class MacsLibs extends JavaPlugin {
     public void onEnable() {
         setInstance(this);
 
+        advertManager = new AdvertManager();
         libLoader = new LibLoader();
 
         registeredButtonClickListener = new RegisteredButtonClickListener();
@@ -51,10 +43,6 @@ public final class MacsLibs extends JavaPlugin {
 
     private void loadTasks(){
         Bukkit.getScheduler().runTaskTimer(this, registeredButtonClickListener::tick, 0L, 20L);
-    }
-
-    public static boolean checkLicense(String license){
-        return true;
     }
 
     @Override

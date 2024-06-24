@@ -38,7 +38,7 @@ public class MacsCommand implements CommandExecutor, TabExecutor {
      */
     @Setter
     private BiConsumer<Player, String[]> defaultBehavior;
-    private BiConsumer<ConsoleCommandSender, String[]> defaultBehaviorConsole;;
+    private BiConsumer<CommandSender, String[]> defaultBehaviorConsole;;
 
     @Getter @Setter private String usage;
     @Getter @Setter private String requiredArgs;
@@ -62,41 +62,38 @@ public class MacsCommand implements CommandExecutor, TabExecutor {
      * Sets the default console behavior if no relevant subcommands were found. Do not set to send the usage command.
      * @param consumer
      */
-    public void setDefaultConsoleBehavior(BiConsumer<ConsoleCommandSender, String[]> consumer){
+    public void setDefaultConsoleBehavior(BiConsumer<CommandSender, String[]> consumer){
         this.defaultBehaviorConsole = consumer;
     }
 
     @Override
     public boolean onCommand(CommandSender commandSender, Command command, String s, String[] strings) {
-        if(!(commandSender instanceof Player)){
-            ConsoleCommandSender console = (ConsoleCommandSender) commandSender;
+        if(!(commandSender instanceof Player p)){
             if(strings.length == 0){
                 if(acceptsNoArgs){
-                    defaultBehaviorConsole.accept(console, strings);
+                    defaultBehaviorConsole.accept(commandSender, strings);
                     return true;
                 }
 
-                sendHelp(console);
+                sendHelp(commandSender);
                 return true;
             }
 
             if(subcommands.containsKey(strings[0].toLowerCase())){
-                subcommands.get(strings[0].toLowerCase()).execute(console, strings);
+                subcommands.get(strings[0].toLowerCase()).execute(commandSender, strings);
                 return true;
             }
 
             if(defaultBehavior != null){
-                defaultBehaviorConsole.accept(console, strings);
+                defaultBehaviorConsole.accept(commandSender, strings);
                 return true;
             }
 
-            sendHelp(console);
+            sendHelp(commandSender);
             return true;
         }
 
-        Player p = (Player)commandSender;
-
-        if(requiredPerm != null && !p.hasPermission(requiredPerm)){
+	    if(requiredPerm != null && !p.hasPermission(requiredPerm)){
             p.sendMessage(MacsLibs.getInstance().getLibLoader().getLang("no-permission"));
             return true;
         }

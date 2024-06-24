@@ -3,6 +3,7 @@ package eu.macsworks.premium.macslibs.objects;
 import eu.macsworks.premium.macslibs.MacsLibs;
 import lombok.Getter;
 import lombok.Setter;
+import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
 
@@ -19,7 +20,7 @@ public class MacsSubcommand {
 
     @Setter private BiConsumer<Player, String[]> commandInfo;
 
-    @Setter private BiConsumer<ConsoleCommandSender, String[]> consoleCommandInfo;
+    @Setter private BiConsumer<CommandSender, String[]> consoleCommandInfo;
 
     public MacsSubcommand(String id){
         this.id = id;
@@ -50,7 +51,7 @@ public class MacsSubcommand {
         commandInfo.accept(sender, args);
     }
 
-    public void execute(ConsoleCommandSender sender, String[] args) {
+    public void execute(CommandSender sender, String[] args) {
         int requiredArgsAmt = 0;
         for(int i = 0; i < requiredArgs.length(); i++) if(requiredArgs.charAt(i) == '<') requiredArgsAmt++;
 

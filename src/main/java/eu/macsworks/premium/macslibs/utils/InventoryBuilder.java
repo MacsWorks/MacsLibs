@@ -1,5 +1,6 @@
 package eu.macsworks.premium.macslibs.utils;
 
+import eu.macsworks.premium.macslibs.MacsLibs;
 import org.bukkit.Bukkit;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
@@ -15,6 +16,11 @@ public class InventoryBuilder {
 
 
     public static InventoryBuilder builder(){
+        if(MacsLibs.getInstance().getScamProtected().get()){
+            Bukkit.getLogger().severe("The MacsLibs instance is scam-protected. No API method will work until the stolen plugin will be paid for.");
+            return null;
+        }
+
         return new InventoryBuilder();
     }
 

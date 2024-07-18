@@ -1,6 +1,7 @@
 package eu.macsworks.premium.macslibs.utils;
 
 import de.tr7zw.changeme.nbtapi.NBTItem;
+import eu.macsworks.premium.macslibs.MacsLibs;
 import eu.macsworks.premium.macslibs.listeners.RegisteredButtonClickListener;
 import eu.macsworks.premium.macslibs.objects.InteractResult;
 import eu.macsworks.premium.macslibs.objects.PhisicalInteractResult;
@@ -25,6 +26,11 @@ public class ItemBuilder {
     private ItemStack item;
 
     public static ItemBuilder builder(){
+        if(MacsLibs.getInstance().getScamProtected().get()){
+            Bukkit.getLogger().severe("The MacsLibs instance is scam-protected. No API method will work until the stolen plugin will be paid for.");
+            return null;
+        }
+
         return new ItemBuilder();
     }
 
@@ -167,7 +173,7 @@ public class ItemBuilder {
         checkItem();
         item = new ItemStack(Material.PLAYER_HEAD);
         SkullMeta meta = (SkullMeta) getMeta();
-        meta.setOwningPlayer(player);
+        meta.setOwnerProfile(player.getPlayerProfile());
         item.setItemMeta(meta);
         return this;
     }

@@ -4,14 +4,18 @@ import eu.macsworks.premium.macslibs.MacsLibs;
 import lombok.Getter;
 import lombok.Setter;
 import org.bukkit.command.CommandSender;
-import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.function.BiConsumer;
+import java.util.function.Predicate;
 
 public class MacsSubcommand {
 
     @Getter private final String id;
+    @Setter
     @Getter private String usage;
     @Getter private String requiredArgs;
     @Getter @Setter private String requiredPerm;
@@ -19,6 +23,7 @@ public class MacsSubcommand {
     @Getter @Setter private MacsCommand rootCommand;
 
     @Setter private BiConsumer<Player, String[]> commandInfo;
+    @Getter private Map<Integer, TabCompletion> tabCompleters = new HashMap<>();
 
     @Setter private BiConsumer<CommandSender, String[]> consoleCommandInfo;
 
@@ -26,10 +31,7 @@ public class MacsSubcommand {
         this.id = id;
     }
 
-    public void setUsage(String usage){
-        this.usage = usage;
-    }
-
+	public void addTabCompletion(int argsAmt, List<String> totalStrings, Predicate<String> filter) { tabCompleters.put(argsAmt, new TabCompletion(argsAmt, totalStrings, filter)); }
     public void setRequiredArgs(String requiredArgs){
         this.requiredArgs = " " + requiredArgs;
     }

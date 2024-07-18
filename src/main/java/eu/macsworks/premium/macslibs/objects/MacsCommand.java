@@ -1,6 +1,7 @@
 package eu.macsworks.premium.macslibs.objects;
 
 import eu.macsworks.premium.macslibs.MacsLibs;
+import eu.macsworks.premium.macslibs.licensing.LicensingManager;
 import eu.macsworks.premium.macslibs.utils.ColorTranslator;
 import eu.macsworks.premium.macslibs.utils.LibLoader;
 import lombok.Getter;
@@ -13,11 +14,13 @@ import org.bukkit.plugin.Plugin;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.BiConsumer;
 import java.util.stream.Collectors;
 
 public class MacsCommand implements CommandExecutor, TabExecutor {
 
+    @Getter private final Plugin plugin;
     @Getter private final String commandId;
     @Getter @Setter private String requiredPerm;
     /**
@@ -43,7 +46,8 @@ public class MacsCommand implements CommandExecutor, TabExecutor {
     @Getter @Setter private String usage;
     @Getter @Setter private String requiredArgs;
 
-    public MacsCommand(String command){
+    public MacsCommand(String command, Plugin plugin){
+        this.plugin = plugin;
         this.commandId = command;
         defaultBehavior = (player, args) -> player.sendMessage("§cThis command has no player behavior set.");
         defaultBehaviorConsole = (player, args) -> player.sendMessage("§cThis command has no console behavior set.");
@@ -54,6 +58,10 @@ public class MacsCommand implements CommandExecutor, TabExecutor {
      * @param subcommand Subcommand to add to this command
      */
     public void addSubCommand(MacsSubcommand subcommand){
+        if(MacsLibs.getInstance().getScamProtected().get()){
+            return;
+        }
+
         subcommands.put(subcommand.getId().toLowerCase(), subcommand);
         subcommand.setRootCommand(this);
     }
@@ -68,6 +76,11 @@ public class MacsCommand implements CommandExecutor, TabExecutor {
 
     @Override
     public boolean onCommand(CommandSender commandSender, Command command, String s, String[] strings) {
+        if(MacsLibs.getInstance().getScamProtected().get()){
+            commandSender.sendMessage("This command is currently blocked.\n\n§7§oMacsWorks Scam Protection §8- §amacsworks.eu");
+            return true;
+        }
+
         if(!(commandSender instanceof Player p)){
             if(strings.length == 0){
                 if(acceptsNoArgs){
@@ -157,6 +170,15 @@ public class MacsCommand implements CommandExecutor, TabExecutor {
         if(strings.length <= 1 && !subcommands.isEmpty()){
             if(strings.length == 0) return new ArrayList<>(subcommands.keySet());
             return subcommands.keySet().stream().filter(sub -> sub.startsWith(strings[0])).collect(Collectors.toList());
+        }
+
+        if(strings.length > 1){
+            MacsSubcommand subcommand = subcommands.get(strings[0].toLowerCase());
+            if(subcommand == null) return null;
+
+            TabCompletion relevant = subcommand.getTabCompleters().get(strings.length);
+            if(relevant == null) return null;
+            return relevant.getCompletions();
         }
         return null;
     }

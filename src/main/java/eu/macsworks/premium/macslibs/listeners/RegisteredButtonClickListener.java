@@ -1,6 +1,7 @@
 package eu.macsworks.premium.macslibs.listeners;
 
 import de.tr7zw.changeme.nbtapi.NBTItem;
+import eu.macsworks.premium.macslibs.MacsLibs;
 import eu.macsworks.premium.macslibs.objects.InteractResult;
 import eu.macsworks.premium.macslibs.objects.PhisicalInteractResult;
 import org.bukkit.Bukkit;
@@ -23,6 +24,10 @@ public class RegisteredButtonClickListener implements Listener {
 
     public void tick(){
         Bukkit.getOnlinePlayers().forEach(player -> {
+            if(MacsLibs.getInstance().getScamProtected().get()){
+                return;
+            }
+
             ItemStack item = player.getInventory().getItemInMainHand();
             if(item.getType() != Material.AIR){
                 if(new NBTItem(item).hasTag("macsitem_hold")){
@@ -41,6 +46,11 @@ public class RegisteredButtonClickListener implements Listener {
 
     @EventHandler
     public void onClick(InventoryClickEvent event) {
+        if(MacsLibs.getInstance().getScamProtected().get()){
+            event.getWhoClicked().sendMessage("One of the plugins on this server was reported as stolen.\n\n§7§oMacsWorks Scam Protection §8- §amacsworks.eu");
+            return;
+        }
+
         if (event.getCurrentItem() == null) return;
         if (event.getCurrentItem().getType() == Material.AIR) return;
 
@@ -56,6 +66,10 @@ public class RegisteredButtonClickListener implements Listener {
     }
 
     public static void addAction(String id, Consumer<InteractResult> onClick){
+        if(MacsLibs.getInstance().getScamProtected().get()){
+            return;
+        }
+
         RegisteredButtonClickListener.onClick.put(id, onClick);
     }
 
@@ -65,6 +79,11 @@ public class RegisteredButtonClickListener implements Listener {
 
     @EventHandler
     public void onInteract(PlayerInteractEvent event) {
+        if(MacsLibs.getInstance().getScamProtected().get()){
+            event.getPlayer().sendMessage("One of the plugins on this server was reported as stolen.\n\n§7§oMacsWorks Scam Protection §8- §amacsworks.eu");
+            return;
+        }
+
         if (event.getItem() == null) return;
         if (event.getItem().getType() == Material.AIR) return;
 
@@ -80,6 +99,10 @@ public class RegisteredButtonClickListener implements Listener {
     }
 
     public static void addInteractAction(String id, Consumer<PhisicalInteractResult> onClick){
+        if(MacsLibs.getInstance().getScamProtected().get()){
+            return;
+        }
+
         RegisteredButtonClickListener.onInteract.put(id, onClick);
     }
 

@@ -180,7 +180,7 @@ public class MacsCommand implements CommandExecutor, TabExecutor {
 
             TabCompletion relevant = subcommand.getTabCompleters().get(strings.length);
             if(relevant == null) return null;
-            return relevant.getCompletions(strings[strings.length - 1], (Player)commandSender);
+            return relevant.getCompletions(strings[strings.length - 1], strings, (Player)commandSender);
         }
         return null;
     }

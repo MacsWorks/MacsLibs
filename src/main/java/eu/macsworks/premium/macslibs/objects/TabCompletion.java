@@ -10,10 +10,10 @@ import java.util.stream.Collectors;
 
 public interface TabCompletion {
 
-	public List<String> availableCompletions(Player p);
+	public List<String> availableCompletions(Player p, String[] args);
 
-	default List<String> getCompletions(String partial, Player p) {
-		return availableCompletions(p).stream().filter(s -> s.toLowerCase().startsWith(partial.toLowerCase())).toList();
+	default List<String> getCompletions(String partial, String[] args, Player p) {
+		return availableCompletions(p, args).stream().filter(s -> s.toLowerCase().startsWith(partial.toLowerCase())).toList();
 	}
 
 }

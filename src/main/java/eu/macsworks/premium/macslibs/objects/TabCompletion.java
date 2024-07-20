@@ -1,21 +1,19 @@
 package eu.macsworks.premium.macslibs.objects;
 
 import lombok.RequiredArgsConstructor;
+import org.bukkit.entity.Player;
 
 import java.util.List;
-import java.util.function.Consumer;
-import java.util.function.Predicate;
+import java.util.Locale;
+import java.util.function.*;
 import java.util.stream.Collectors;
 
-@RequiredArgsConstructor
-public class TabCompletion {
+public interface TabCompletion {
 
-	private final int argIndex;
-	private final List<String> completions;
-	private final Predicate<String> completionFilter;
+	public List<String> availableCompletions(Player p);
 
-	public List<String> getCompletions() {
-		return completions.stream().filter(completionFilter).toList();
+	default List<String> getCompletions(String partial, Player p) {
+		return availableCompletions(p).stream().filter(s -> s.toLowerCase().startsWith(partial.toLowerCase())).toList();
 	}
 
 }

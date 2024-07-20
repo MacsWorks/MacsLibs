@@ -173,12 +173,14 @@ public class MacsCommand implements CommandExecutor, TabExecutor {
         }
 
         if(strings.length > 1){
+            if(!(commandSender instanceof Player)) return new ArrayList<>(subcommands.keySet());
+
             MacsSubcommand subcommand = subcommands.get(strings[0].toLowerCase());
             if(subcommand == null) return null;
 
             TabCompletion relevant = subcommand.getTabCompleters().get(strings.length);
             if(relevant == null) return null;
-            return relevant.getCompletions();
+            return relevant.getCompletions(strings[strings.length - 1], (Player)commandSender);
         }
         return null;
     }

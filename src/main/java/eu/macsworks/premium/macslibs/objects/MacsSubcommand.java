@@ -9,8 +9,7 @@ import org.bukkit.entity.Player;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.function.BiConsumer;
-import java.util.function.Predicate;
+import java.util.function.*;
 
 public class MacsSubcommand {
 
@@ -31,7 +30,7 @@ public class MacsSubcommand {
         this.id = id;
     }
 
-	public void addTabCompletion(int argsAmt, List<String> totalStrings, Predicate<String> filter) { tabCompleters.put(argsAmt, new TabCompletion(argsAmt, totalStrings, filter)); }
+	public void addTabCompletion(int argsAmt, TabCompletion tab) { tabCompleters.put(argsAmt, tab); }
     public void setRequiredArgs(String requiredArgs){
         this.requiredArgs = " " + requiredArgs;
     }

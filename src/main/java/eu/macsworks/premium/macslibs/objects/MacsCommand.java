@@ -14,6 +14,7 @@ import org.bukkit.plugin.Plugin;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.BiConsumer;
 import java.util.stream.Collectors;
@@ -41,10 +42,14 @@ public class MacsCommand implements CommandExecutor, TabExecutor {
      */
     @Setter
     private BiConsumer<Player, String[]> defaultBehavior;
-    private BiConsumer<CommandSender, String[]> defaultBehaviorConsole;;
+    private BiConsumer<CommandSender, String[]> defaultBehaviorConsole;
+
+    @Getter private final Map<Integer, TabCompletion> tabCompleters = new HashMap<>();
 
     @Getter @Setter private String usage;
     @Getter @Setter private String requiredArgs;
+
+
 
     public MacsCommand(String command, Plugin plugin){
         this.plugin = plugin;
@@ -52,6 +57,8 @@ public class MacsCommand implements CommandExecutor, TabExecutor {
         defaultBehavior = (player, args) -> player.sendMessage("§cThis command has no player behavior set.");
         defaultBehaviorConsole = (player, args) -> player.sendMessage("§cThis command has no console behavior set.");
     }
+
+    public void addTabCompletion(int argsAmt, TabCompletion tab) { tabCompleters.put(argsAmt, tab); }
 
     /**
      * Adds a subcommand to this command, identified by the subcommand ID
@@ -167,21 +174,30 @@ public class MacsCommand implements CommandExecutor, TabExecutor {
 
     @Override
     public List<String> onTabComplete(CommandSender commandSender, Command command, String s, String[] strings) {
-        if(strings.length <= 1 && !subcommands.isEmpty()){
-            if(strings.length == 0) return new ArrayList<>(subcommands.keySet());
-            return subcommands.keySet().stream().filter(sub -> sub.startsWith(strings[0])).collect(Collectors.toList());
-        }
+        if(strings.length <= 1){
+            if(!subcommands.isEmpty()){
+                if(strings.length == 0) return new ArrayList<>(subcommands.keySet());
+                return subcommands.keySet().stream().filter(sub -> sub.startsWith(strings[0])).collect(Collectors.toList());
+            }
 
-        if(strings.length > 1){
-            if(!(commandSender instanceof Player)) return new ArrayList<>(subcommands.keySet());
-
-            MacsSubcommand subcommand = subcommands.get(strings[0].toLowerCase());
-            if(subcommand == null) return null;
-
-            TabCompletion relevant = subcommand.getTabCompleters().get(strings.length);
+            TabCompletion relevant = getTabCompleters().get(strings.length);
             if(relevant == null) return null;
             return relevant.getCompletions(strings[strings.length - 1], strings, (Player)commandSender);
         }
-        return null;
+
+        if(subcommands.isEmpty()){
+            TabCompletion relevant = getTabCompleters().get(strings.length);
+            if(relevant == null) return null;
+            return relevant.getCompletions(strings[strings.length - 1], strings, (Player)commandSender);
+        }
+
+	    if (!(commandSender instanceof Player)) return new ArrayList<>(subcommands.keySet());
+
+	    MacsSubcommand subcommand = subcommands.get(strings[0].toLowerCase());
+	    if(subcommand == null) return null;
+
+	    TabCompletion relevant = subcommand.getTabCompleters().get(strings.length);
+	    if(relevant == null) return null;
+	    return relevant.getCompletions(strings[strings.length - 1], strings, (Player)commandSender);
     }
 }

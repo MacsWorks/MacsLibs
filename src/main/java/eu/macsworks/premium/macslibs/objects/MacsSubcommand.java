@@ -22,7 +22,7 @@ public class MacsSubcommand {
     @Getter @Setter private MacsCommand rootCommand;
 
     @Setter private BiConsumer<Player, String[]> commandInfo;
-    @Getter private Map<Integer, TabCompletion> tabCompleters = new HashMap<>();
+    @Getter private final Map<Integer, TabCompletion> tabCompleters = new HashMap<>();
 
     @Setter private BiConsumer<CommandSender, String[]> consoleCommandInfo;
 

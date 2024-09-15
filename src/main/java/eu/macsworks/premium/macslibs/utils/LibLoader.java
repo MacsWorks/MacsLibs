@@ -30,7 +30,7 @@ public class LibLoader {
         config.getConfigurationSection("lang").getKeys(false).forEach(s -> lang.put(s, ColorTranslator.translate(config.getString("lang." + s))));
 
         adsEnabled = config.getBoolean("advertising");
-        if(adsEnabled) Bukkit.getScheduler().runTaskTimer(MacsLibs.getInstance(), MacsLibs.getInstance().getAdvertManager()::tick, 0L, 100L);
+        if(adsEnabled) Bukkit.getScheduler().runTaskTimerAsynchronously(MacsLibs.getInstance(), MacsLibs.getInstance().getAdvertManager()::tick, 0L, 100L);
     }
 
     public String getLang(String key){
